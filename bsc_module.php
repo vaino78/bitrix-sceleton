@@ -1,36 +1,22 @@
 <?php
 
-$OPTIONS = getopt(
-	'd::l::c::v::vd::a::h::db::o::',
-	array(
-		'dir::',
-		'lang::',
-		'version::',
-		'version-date::',
-		'admin::',
-		'class::',
-		'database::',
-		'js::',
-		'help::',
-		'rights::',
-		'option::'
-	)
-);
-
 $help = <<<HELP
 Bitrix module sceleton constructor.
 
 Usage:
-	php -f bsc_module.php module_name [args]
+	php -f bsc_module.php -m module_name [args]
 
 Args:
+	-m, --module
+		Module id
+
 	-d, --dir
 		Output directory, current dir by default.
 
 	-v, --version
 		Module version, "1.0.0" by default.
 
-	-vd, --vesrion-date
+	-w, --vesrion-date
 		Module version date, current date as default.
 
 	-l, --lang
@@ -42,7 +28,7 @@ Args:
 	-c, --class
 		Names of classes used in the module.
 
-	-db, --database
+	-b, --database
 		Names of db types used in the module.
 
 	-o, --option
@@ -59,15 +45,43 @@ Args:
 
 HELP;
 
-
 if(basename($argv[0]) == basename(__FILE__))
 	array_shift($argv);
-//var_dump($OPTIONS);
+
+//$module_name = array_shift($argv);
+
+$OPTIONS = getopt(
+	'd:l:c:v:w:a:h:b:o:m:',
+	array(
+		'module:',
+		'dir:',
+		'lang:',
+		'version:',
+		'version-date:',
+		'admin:',
+		'class:',
+		'database:',
+		'js:',
+		'help:',
+		'rights:',
+		'option:'
+	)
+);
+var_dump($OPTIONS); //die();
 
 if(isset($OPTIONS['h']) || isset($OPTIONS['help']) || sizeof($argv)==0)
 	die($help);
 
-$module_name = $argv[0];
+$module_name = (
+	($OPTIONS['m'])
+	? $OPTIONS['m']
+	: (
+		($OPTIONS['module'])
+		? $OPTIONS['module']
+		: false
+	)
+);
+
 if(!preg_match('@^[a-z\._]+$@',$module_name))
 	die('Error: Incorrect module name');
 
@@ -107,6 +121,8 @@ $ADMIN_REQ_TMPL = $PHP_OPEN . PHP_EOL
 
 $ADMIN_FILE_TMPL = $PHP_OPEN . PHP_EOL
 	. 'IncludeModuleLangFile(__FILE__);' . PHP_EOL
+	. 'require_once(realpath(dirname(__FILE__) . \'/../prolog.php\'));' . PHP_EOL
+	. str_repeat(PHP_EOL, 5)
 	. $PHP_CLOSE;
 
 
@@ -115,15 +131,17 @@ $blank_filter = create_function('$var','return $var!=false;');
 
 function get_params_array($short_key, $long_key)
 {
-	global $options, $blank_filter;
+	global $OPTIONS, $blank_filter;
 
-	$res = ($options[$short_key])
-		? $options[$short_key]
+	$res = (
+		($OPTIONS[$short_key])
+		? $OPTIONS[$short_key]
 		: (
-			($options[$long_key])
-			? $options[$long_key]
+			($OPTIONS[$long_key])
+			? $OPTIONS[$long_key]
 			: false
-		);
+		)
+	);
 	if(!is_array($res))
 		$res = array($res);
 	$res = array_filter($res, $blank_filter);
@@ -137,7 +155,7 @@ if(empty($langs))
 
 $classes = get_params_array('c', 'class');
 
-$databases = get_params_array('db', 'database');
+$databases = get_params_array('b', 'database');
 
 $module_options = get_params_array('o', 'option');
 
@@ -152,7 +170,7 @@ $version = get_params_array('v', 'version');
 $version = (!empty($version)) ? $version[0] : false;
 if(!$version)
 	$version = '1.0.0';
-$version_date = get_params_array('vd', 'version-date');
+$version_date = get_params_array('w', 'version-date');
 $version_date = (!empty($version_date)) ? $version_date[0] : false;
 if(!$version_date)
 	$version_date = date('Y-m-d H:i:s');
@@ -169,7 +187,11 @@ foreach($langs as $lang)
 mkdir(($module_dir . '/admin'), 0644) or die("Can not create dir: $module_dir/admin");
 mkdir(($module_dir . '/install'), 0644) or die("Can not create dir: $module_dir/install");
 if(!empty($admin_files))
+{
 	mkdir(($module_dir . '/install/admin'), 0644) or die("Can not create dir: $module_dir/install/admin");
+	foreach($langs as $lang)
+		mkdir(($module_dir . '/lang/' . $lang . '/admin'), 0644) or die("Can not create dir: $module_dir/lang/$lang/admin");
+}
 if(!empty($js_files))
 	mkdir(($module_dir . '/install/js'), 0644) or die("Can not create dir: $module_dir/install/js");
 mkdir(($module_dir . '/classes'), 0644) or die("Can not create dir: $module_dir/classes");
@@ -195,7 +217,7 @@ file_put_contents(
 		$PHP_OPEN . PHP_EOL
 		. sprintf('if class_exists(\'%s\')%sreturn;', $module_name_translated, (PHP_EOL . "\t")) . PHP_EOL
 		. PHP_EOL
-		. '$PathInstall = str_replace(' . "'\\', '/', " . 'dirname(__FILE__));' . PHP_EOL
+		. '$PathInstall = str_replace(' . "'\\\\', '/', " . 'dirname(__FILE__));' . PHP_EOL
 		. 'global $MESS;' . PHP_EOL
 		. 'IncludeModuleLangFile($PathInstall . \'/install.php\');' . PHP_EOL
 		. PHP_EOL
@@ -211,7 +233,7 @@ file_put_contents(
 		. PHP_EOL
 		. "\t" . 'public function __construct()' . PHP_EOL
 		. "\t" . '{' . PHP_EOL
-		. "\t\t" . '$PathInstall = str_replace(' . "'\\', '/', " . 'dirname(__FILE__));' . PHP_EOL
+		. "\t\t" . '$PathInstall = str_replace(' . "'\\\\', '/', " . 'dirname(__FILE__));' . PHP_EOL
 		. "\t\t" . 'include($PathInstall . \'/version.php\');' . PHP_EOL
 		. "\t\t" . '$this->MODULE_NAME = GetMessage(\'' . strtoupper($module_name_translated) . 'MODULE_NAME\');' . PHP_EOL
 		. "\t\t" . '$this->MODULE_DESCRIPTION = GetMessage(\'' . strtoupper($module_name_translated) . 'MODULE_DESCRIPTION\');' . PHP_EOL
@@ -442,7 +464,7 @@ if(!empty($admin_files))
 		foreach($langs as $lang)
 		{
 			file_put_contents(
-				($module_dir . '/lang/' . $lang . '/' . $aff . '.php'),
+				($module_dir . '/lang/' . $lang . '/admin/' . $aff . '.php'),
 				(
 					$UTF8_BOM
 					. $BLANK_PHP_TMPL
@@ -451,13 +473,16 @@ if(!empty($admin_files))
 		}
 
 		file_put_contents(
-			($module_dir . '/install/admin/' . $aff . '.php'),
+			($module_dir . '/install/admin/' . $module_name_translated . '___' . $aff . '.php'),
 			sprintf($ADMIN_REQ_TMPL, $aff)
 		);
 	}
 }
 
 
+/**
+ * Writing classes and include.php
+ */
 $include_classes = array();
 if(!empty($classes))
 {
@@ -486,7 +511,8 @@ if(!empty($classes))
 
 $include_file_contents = $PHP_OPEN . PHP_EOL
 	. 'global $DBType;' . PHP_EOL . PHP_EOL
-	. sprintf('CModule::AddAutoloadClasses("%s", array(', $module_name);
+	. sprintf('CModule::AddAutoloadClasses("%s", array(', $module_name)
+	. PHP_EOL;
 if(!empty($include_classes))
 {
 	$include_file_contents .= "\t'' => '" . implode(("'," . PHP_EOL . "\t'' => '"), $include_classes)."'" . PHP_EOL;
@@ -498,3 +524,57 @@ file_put_contents(
 );
 
 
+/**
+ * Writing options.php and default_options.php
+ */
+file_put_contents(
+	($module_dir . '/options.php'),
+	$BLANK_PHP_TMPL
+);
+
+$default_options = array();
+if(!empty($module_options))
+	$default_options = array_combine($module_options, array_pad(array(), count($module_options), ''));
+file_put_contents(
+	($module_dir . '/default_option.php'),
+	(
+		$PHP_OPEN . PHP_EOL
+		. sprintf('$%s_default_option = %s;', $module_name_translated, var_export($default_options, true)) . PHP_EOL
+		. PHP_EOL
+		. $PHP_CLOSE
+	)
+);
+
+
+/**
+ * Writing prolog.php
+ */
+file_put_contents(
+	($module_dir . '/prolog.php'),
+	(
+		$PHP_OPEN . PHP_EOL
+		. 'define(\'ADMIN_MODULE_NAME\', \''.$module_name.'\');' . PHP_EOL
+		. 'define(\'ADMIN_MODULE_ICON\', \'\');' . PHP_EOL
+		. PHP_EOL
+		. $PHP_CLOSE
+	)
+);
+
+foreach($langs as $lang)
+{
+	file_put_contents(
+		($module_dir . '/lang/' . $lang . '/options.php'),
+		($UTF8_BOM . $BLANK_PHP_TMPL)
+	);
+	file_put_contents(
+		($module_dir . '/lang/' . $lang . '/default_option.php'),
+		($UTF8_BOM . $BLANK_PHP_TMPL)
+	);
+	file_put_contents(
+		($module_dir . '/lang/' . $lang . '/prolog.php'),
+		($UTF8_BOM . $BLANK_PHP_TMPL)
+	);
+}
+
+
+echo 'done!', PHP_EOL;
