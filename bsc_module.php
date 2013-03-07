@@ -49,7 +49,7 @@ if(basename($argv[0]) == basename(__FILE__))
 	array_shift($argv);
 
 $OPTIONS = getopt(
-	'd:l:c:v:w:a:h:b:o:m:',
+	'd:l:c:v:w:a:b:o:m:h::',
 	array(
 		'module:',
 		'dir:',
@@ -60,8 +60,8 @@ $OPTIONS = getopt(
 		'class:',
 		'database:',
 		'js:',
-		'help:',
-		'rights:',
+		'help::',
+		'rights::',
 		'option:'
 	)
 );
