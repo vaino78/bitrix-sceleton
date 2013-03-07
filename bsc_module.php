@@ -48,8 +48,6 @@ HELP;
 if(basename($argv[0]) == basename(__FILE__))
 	array_shift($argv);
 
-//$module_name = array_shift($argv);
-
 $OPTIONS = getopt(
 	'd:l:c:v:w:a:h:b:o:m:',
 	array(
@@ -67,7 +65,6 @@ $OPTIONS = getopt(
 		'option:'
 	)
 );
-var_dump($OPTIONS); //die();
 
 if(isset($OPTIONS['h']) || isset($OPTIONS['help']) || sizeof($argv)==0)
 	die($help);
