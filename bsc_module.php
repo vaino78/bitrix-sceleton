@@ -62,7 +62,7 @@ HELP;
 
 if(basename($argv[0]) == basename(__FILE__))
 	array_shift($argv);
-var_dump($OPTIONS);
+//var_dump($OPTIONS);
 
 if(isset($OPTIONS['h']) || isset($OPTIONS['help']) || sizeof($argv)==0)
 	die($help);
@@ -73,7 +73,7 @@ if(!preg_match('@^[a-z\._]+$@',$module_name))
 
 $dir = (
 	($OPTIONS['d'])
-	? $OPTIONS['dir']
+	? $OPTIONS['d']
 	: (
 		($OPTIONS['dir'])
 		? $OPTIONS['dir']
