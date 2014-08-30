@@ -212,11 +212,12 @@ file_put_contents(
 	($module_dir . '/install/index.php'),
 	(
 		$PHP_OPEN . PHP_EOL
-		. sprintf('if class_exists(\'%s\')%sreturn;', $module_name_translated, (PHP_EOL . "\t")) . PHP_EOL
+		. sprintf('#if(class_exists(\'%s\'))%sreturn;', $module_name_translated, (PHP_EOL . "#\t")) . PHP_EOL
 		. PHP_EOL
 		. '$PathInstall = str_replace(' . "'\\\\', '/', " . 'dirname(__FILE__));' . PHP_EOL
 		. 'global $MESS;' . PHP_EOL
-		. 'IncludeModuleLangFile($PathInstall . \'/install.php\');' . PHP_EOL
+		. '#IncludeModuleLangFile($PathInstall . \'/install.php\');' . PHP_EOL
+		. 'include(dirname($PathInstall) . \'/lang/\' . LANGUAGE_ID . \'/install.php\');' . PHP_EOL
 		. PHP_EOL
 		. sprintf('class %s extends CModule', $module_name_translated) . PHP_EOL
 		. '{' . PHP_EOL
@@ -254,7 +255,7 @@ file_put_contents(
 		. "\t\t" . 'RegisterModule($this->MODULE_ID);' . PHP_EOL
 		. "\t" . '}' . PHP_EOL
 		. PHP_EOL
-		. "\t" . 'public function DoInstall()' . PHP_EOL
+		. "\t" . 'public function DoUninstall()' . PHP_EOL
 		. "\t" . '{' . PHP_EOL
 		. "\t\t" . '$this->UninstallFiles();' . PHP_EOL
 		. (
@@ -277,7 +278,7 @@ file_put_contents(
 			)
 			: ''
 		)
-		. "\t" . 'private function InstallFiles()' . PHP_EOL
+		. "\t" . 'public function InstallFiles()' . PHP_EOL
 		. "\t" . '{' . PHP_EOL
 		. (
 			(!empty($js_files))
@@ -301,7 +302,7 @@ file_put_contents(
 		)
 		. "\t" . '}' . PHP_EOL
 		. PHP_EOL
-		. "\t" . 'private function InstallEvents()' . PHP_EOL
+		. "\t" . 'public function InstallEvents()' . PHP_EOL
 		. "\t" . '{' . PHP_EOL
 		. "\t" . '}' . PHP_EOL
 		. PHP_EOL
@@ -309,7 +310,7 @@ file_put_contents(
 		. "\t" . '{' . PHP_EOL
 		. "\t" . '}' . PHP_EOL
 		. PHP_EOL
-		. "\t" . 'private function UninstallFiles()' . PHP_EOL
+		. "\t" . 'public function UninstallFiles()' . PHP_EOL
 		. "\t" . '{' . PHP_EOL
 		. (
 			(!empty($js_files))
@@ -335,7 +336,7 @@ file_put_contents(
 		)
 		. "\t" . '}' . PHP_EOL
 		. PHP_EOL
-		. "\t" . 'private function UninstallEvents()' . PHP_EOL
+		. "\t" . 'public function UninstallEvents()' . PHP_EOL
 		. "\t" . '{' . PHP_EOL
 		. "\t" . '}' . PHP_EOL
 		. PHP_EOL
