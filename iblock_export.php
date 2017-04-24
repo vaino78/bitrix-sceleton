@@ -187,12 +187,26 @@ try {
       $iblockMessageData[$d['MESSAGE_ID']] = $d['MESSAGE_TEXT'];
     }
 
+    $q = Iblock\IblockSiteTable::getList(array(
+      'filter' => array(
+        '=IBLOCK_ID' => $iblock['ID']
+      ),
+      'select' => array('SITE_ID')
+    ));
+    $iblockSiteData = array();
+    while($d = $q->fetch()) {
+      $iblockSiteData[] = $d['SITE_ID'];
+    }
+
     printf(
       $tmpl_iblock,
       \CIBlock::class,
       var_export(array_merge(
         array_diff_key($iblock, array_flip(array('ID', 'TIMESTAMP_X'))),
-        array('GROUP_ID' => $iblockGroupsData),
+        array(
+          'GROUP_ID' => $iblockGroupsData,
+          'SITE_ID' => $iblockSiteData
+        ),
         $iblockMessageData
       ), true)
     );
