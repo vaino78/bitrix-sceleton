@@ -98,6 +98,7 @@ try {
     $bitrix_dir = __DIR__;
   }
 
+  $_SERVER['DOCUMENT_ROOT'] = realpath($bitrix_dir . '/..');
   $prolog_before = sprintf('%s/modules/main/include/prolog_before.php', realpath($bitrix_dir));
   if(!file_exists($prolog_before)) {
     throw new Exception(sprintf('Can not find %s', $prolog_before));
