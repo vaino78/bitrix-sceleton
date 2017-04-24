@@ -138,7 +138,7 @@ try {
   if(!array_key_exists('exclude_type', $options)) {
     $typeData = Iblock\TypeTable::getList(array(
       'filter' => array(
-        '=ID' => $iblock['TYPE']
+        '=ID' => $iblock['IBLOCK_TYPE_ID']
       ),
       'select' => array('*')
     ))->fetch();
