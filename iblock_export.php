@@ -50,7 +50,7 @@ TMPL;
 $tmpl_uf = <<<TMPL
 
 \$obUf = new %s;
-\$ufField = $obUf->Add(array_merge(
+\$ufField = \$obUf->Add(array_merge(
   array('ENTITY_ID' => sprintf('IBLOCK_%u_SECTION', \$iblockId)),
   %s
 ));
