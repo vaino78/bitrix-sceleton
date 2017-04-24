@@ -16,33 +16,33 @@ HELP;
 
 $tmpl_type = <<<TMPL
 
-$obType = new %s;
-$result = $obType->Add(%s);
-if(!$result) {
-  throw new Exception($obType->LAST_ERROR);
+\$obType = new %s;
+\$result = \$obType->Add(%s);
+if(!\$result) {
+  throw new Exception(\$obType->LAST_ERROR);
 }
 
 TMPL;
 
 $tmpl_iblock = <<<TMPL
 
-$obIblock = new %s;
-$iblockId = $obIblock->Add(%s);
-if(!$iblockId) {
-  throw new Exception($obIblock->LAST_ERROR);
+\$obIblock = new %s;
+\$iblockId = \$obIblock->Add(%s);
+if(!\$iblockId) {
+  throw new Exception(\$obIblock->LAST_ERROR);
 }
 
 TMPL;
 
 $tmpl_prop = <<<template
 
-$obProp = new %s;
-$propId = $obProp->Add(array_merge(
-  array('IBLOCK_ID' => $iblockId)
+\$obProp = new %s;
+\$propId = \$obProp->Add(array_merge(
+  array('IBLOCK_ID' => \$iblockId)
   %s
 ));
-if(!$propId) {
-  throw new Exception($propId->LAST_ERROR);
+if(!\$propId) {
+  throw new Exception(\$propId->LAST_ERROR);
 }
 
 TMPL;
