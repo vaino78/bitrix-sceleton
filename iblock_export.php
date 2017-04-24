@@ -34,7 +34,7 @@ if(!\$iblockId) {
 
 TMPL;
 
-$tmpl_prop = <<<template
+$tmpl_prop = <<<TMPL
 
 \$obProp = new %s;
 \$propId = \$obProp->Add(array_merge(
