@@ -47,6 +47,20 @@ if(!$propId) {
 
 TMPL;
 
+$tmpl_uf = <<<TMPL
+
+$obUf = new %s;
+$ufField = $obUf->Add(array_merge(
+  array('ENTITY_ID' => sprintf('IBLOCK_%u_SECTION', $iblockId)),
+  %s
+));
+if(!$ufField) {
+  $ex = $GLOBALS['APPLICATION']->GetException();
+  throw new Exception(!empty($ex) ? $ex->GetMessage() : 'User field add error');
+}
+
+TMPL;
+
 $options = getopt(
   'b:c:h::i:t:',
   array(
@@ -209,6 +223,39 @@ try {
       if($d['PROPERTY_TYPE'] == PropertyTable::TYPE_LIST && !empty($iblockPropValuesData[$d['ID']])) {
         $values = $iblockPropValuesData[$d['ID']];
       }
+
+      printf(
+        $tmpl_prop,
+        \CIBlockProperty::class,
+        var_export(array_merge(
+          array_diff_key($d, array_flip(array('ID', 'TIMESTAMP_X', 'IBLOCK_ID'))),
+          (
+            !empty($values)
+            ? array('VALUES' => $values)
+            : array()
+          )
+        ), true)
+      );
+    }
+  }
+
+  if(!array_keys_exists('exclude_section_uf', $options)) {
+    $q = \CUserTypeEntity::GetList(
+      array(
+        "SORT" => "ASC",
+        "ID" => "ASC"
+      ),
+      array(
+        "ENTITY_ID" => sprintf('IBLOCK_%u_SECTION', $iblock['ID'])
+      )
+    );
+    while($d = $q->Fetch()) {
+      $dd = \CUserTypeEntity::GetById($d['ID']);
+      printf(
+        $tmpl_uf,
+        \CUserTypeEntity::class,
+        array_diff_key($dd, array_flip(array('ID', 'ENTITY_ID')))
+      );
     }
   }
 
@@ -216,3 +263,5 @@ try {
   fwrite(STDERR, ($e->getMessage() . PHP_EOL));
   exit($e->getCode() ?? 1);
 }
+
+echo '# Done!', PHP_EOL;
