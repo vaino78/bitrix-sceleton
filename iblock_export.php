@@ -202,7 +202,7 @@ try {
       $tmpl_iblock,
       \CIBlock::class,
       var_export(array_merge(
-        array_diff_key($iblock, array_flip(array('ID', 'TIMESTAMP_X'))),
+        array_diff_key($iblock, array_flip(array('ID', 'TIMESTAMP_X', 'TMP_ID', 'XML_ID'))),
         array(
           'GROUP_ID' => $iblockGroupsData,
           'SITE_ID' => $iblockSiteData
