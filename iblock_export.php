@@ -49,14 +49,14 @@ TMPL;
 
 $tmpl_uf = <<<TMPL
 
-$obUf = new %s;
-$ufField = $obUf->Add(array_merge(
-  array('ENTITY_ID' => sprintf('IBLOCK_%u_SECTION', $iblockId)),
+\$obUf = new %s;
+\$ufField = $obUf->Add(array_merge(
+  array('ENTITY_ID' => sprintf('IBLOCK_%u_SECTION', \$iblockId)),
   %s
 ));
-if(!$ufField) {
-  $ex = $GLOBALS['APPLICATION']->GetException();
-  throw new Exception(!empty($ex) ? $ex->GetMessage() : 'User field add error');
+if(!\$ufField) {
+  \$ex = \$GLOBALS['APPLICATION']->GetException();
+  throw new Exception(!empty(\$ex) ? \$ex->GetMessage() : 'User field add error');
 }
 
 TMPL;
