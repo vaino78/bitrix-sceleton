@@ -213,6 +213,7 @@ try {
     );
   }
 
+  var_dump('exclude_props', !array_key_exists('exclude_props', $options));
   if(!array_key_exists('exclude_props', $options)) {
     $q = Iblock\PropertyEnumerationTable::getList(array(
       'filter' => array(
