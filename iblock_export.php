@@ -11,7 +11,33 @@ Usage:
     php iblock_export.php -i <IBlock ID> [args]
     php iblock_export.php -c <IBlock code> [-t <IBlock type>] [args]
 
+Args:
+    -i, --id
+      ID of iblock to export
 
+    -c, --code
+      Code of iblock to export
+
+    -t, --type
+      Type ID of iblock to export
+
+    -b, --bitrix
+      Path to "site/document_root/bitrix" dir
+
+    --exclude_type
+      Do not export iblock type
+
+    --exclude_iblock
+      Do not export iblock
+
+    --exclude_props
+      Do not export iblock properties
+
+    --exclude_section_uf
+      Do not export iblock sections userfields
+
+    -h, --help
+      Displaying this help
 HELP;
 
 $tmpl_type = <<<TMPL
@@ -280,8 +306,7 @@ try {
   }
 
 } catch(Exception $e) {
-    echo $e->getMessage(), PHP_EOL;
-  fwrite(STDERR, ($e->getMessage() . PHP_EOL));
+  fwrite(fopen('php://stderr', 'w'), ($e->getMessage() . PHP_EOL));
   exit($e->getCode() ?? 1);
 }
 
