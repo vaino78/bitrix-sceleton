@@ -110,6 +110,9 @@ try {
     throw new Exception('Can not include iblock module');
   }
 
+  error_reporting(E_ALL ^ E_NOTICE);
+  ini_set('display_errors', true);
+
   $iblock_condition = (
     !empty($id)
     ? array(
@@ -213,11 +216,11 @@ try {
     );
   }
 
-  var_dump('exclude_props', !array_key_exists('exclude_props', $options));
+  #var_dump('exclude_props', !array_key_exists('exclude_props', $options));
   if(!array_key_exists('exclude_props', $options)) {
     $q = Iblock\PropertyEnumerationTable::getList(array(
       'filter' => array(
-        '=IBLOCK_ID' => $iblock['ID']
+        '=PROPERTY.IBLOCK_ID' => $iblock['ID']
       ),
       array('*')
     ));
@@ -237,7 +240,7 @@ try {
     ));
     while($d = $q->fetch()) {
       $values = array();
-      if($d['PROPERTY_TYPE'] == PropertyTable::TYPE_LIST && !empty($iblockPropValuesData[$d['ID']])) {
+      if($d['PROPERTY_TYPE'] == Iblock\PropertyTable::TYPE_LIST && !empty($iblockPropValuesData[$d['ID']])) {
         $values = $iblockPropValuesData[$d['ID']];
       }
 
@@ -245,7 +248,7 @@ try {
         $tmpl_prop,
         \CIBlockProperty::class,
         var_export(array_merge(
-          array_diff_key($d, array_flip(array('ID', 'TIMESTAMP_X', 'IBLOCK_ID'))),
+          array_diff_key($d, array_flip(array('ID', 'TIMESTAMP_X', 'IBLOCK_ID', 'TMP_ID', 'XML_ID'))),
           (
             !empty($values)
             ? array('VALUES' => $values)
@@ -256,7 +259,7 @@ try {
     }
   }
 
-  if(!array_keys_exists('exclude_section_uf', $options)) {
+  if(!array_key_exists('exclude_section_uf', $options)) {
     $q = \CUserTypeEntity::GetList(
       array(
         "SORT" => "ASC",
@@ -277,6 +280,7 @@ try {
   }
 
 } catch(Exception $e) {
+    echo $e->getMessage(), PHP_EOL;
   fwrite(STDERR, ($e->getMessage() . PHP_EOL));
   exit($e->getCode() ?? 1);
 }
