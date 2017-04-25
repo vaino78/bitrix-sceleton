@@ -206,6 +206,8 @@ try {
       $iblockGroupsData[$d['GROUP_ID']] = $d['PERMISSION'];
     }
 
+    $iblockFieldsData = \CIBlock::GetFields($iblock['ID']);
+
     $q = Iblock\IblockMessageTable::getList(array(
       'filter' => array(
         '=IBLOCK_ID' => $iblock['ID']
@@ -236,6 +238,11 @@ try {
         array(
           'GROUP_ID' => $iblockGroupsData,
           'SITE_ID' => $iblockSiteData
+        ),
+        (
+          !empty($iblockFieldsData)
+          ? array('FIELDS' => $iblockFieldsData)
+          : array()
         ),
         $iblockMessageData
       ), true)
