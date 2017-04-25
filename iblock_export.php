@@ -64,7 +64,7 @@ $tmpl_prop = <<<TMPL
 
 \$obProp = new %s;
 \$propId = \$obProp->Add(array_merge(
-  array('IBLOCK_ID' => \$iblockId)
+  array('IBLOCK_ID' => \$iblockId),
   %s
 ));
 if(!\$propId) {
