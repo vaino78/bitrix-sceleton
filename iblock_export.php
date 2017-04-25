@@ -98,6 +98,7 @@ try {
     $bitrix_dir = __DIR__;
   }
 
+  define('BX_BUFFER_USED', true);
   $_SERVER['DOCUMENT_ROOT'] = realpath($bitrix_dir . '/..');
   $prolog_before = sprintf('%s/modules/main/include/prolog_before.php', realpath($bitrix_dir));
   if(!file_exists($prolog_before)) {
